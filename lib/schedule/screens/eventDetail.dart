@@ -51,14 +51,26 @@ class _EventDetailState extends State<EventDetail> {
             },
           ),
         ],
-        title: Text('Details',
+        title: Text(
+            '${event.code.substring(0, 2)} ${event.code.substring(2)} - ${event.name}',
             style: TextStyle(
                 fontWeight: FontWeight.bold, color: theme.textHeadingColor)),
       ),
       body: SingleChildScrollView(
-        child: event.buildEventDetails(context, callback: () {
-          setState(() {});
-        }),
+        child: event.buildScores(context, callback: () {}),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+              builder: (BuildContext context) {
+                return Scaffold(
+                    body: event.buildEventDetails(context, callback: () {
+                  setState(() {});
+                }));
+              },
+              context: context);
+        },
+        child: Icon(Icons.edit),
       ),
     );
   }

@@ -8,7 +8,7 @@ import 'package:instiapp/data/scheduleContainer.dart';
 import 'package:instiapp/themeing/notifier.dart';
 import 'package:instiapp/utilities/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'scoresClass.dart';
 import 'eventClass.dart';
 
 //TODO = LINKS??, SORTING
@@ -18,11 +18,17 @@ class Course extends Event {
   String code;
   String slot;
   String minor;
+  double totalScore = 100.0;
   String instructors;
   String cap;
   String prerequisite;
 
   int slotType; // 0 = lecture, 1 = tutorial, 2 = lab
+
+  List<Score> scores = [
+    Score(name: "Endsem", weightage: 0, total: 1, score: 1.0)
+  ];
+
   Course({
     this.enrolled,
     this.ltpc,
@@ -248,20 +254,88 @@ class Course extends Event {
   }
 
   @override
+  Widget buildScores(BuildContext context, {Function callback}) {
+    List<DataRow> tableRows = [];
+    double totalScore = 0.0;
+    // List<FlSpot> markspots = [];
+    double tempIndex = 1;
+    scores.forEach((Score mark) {
+      tableRows.add(mark.getRow());
+      totalScore += mark.netScore;
+      // markspots.add(FlSpot(tempIndex, mark.score * 100 / mark.total));
+      tempIndex += 1;
+    });
+    this.totalScore = totalScore;
+    tableRows.add(DataRow(cells: [
+      DataCell(Text(
+        'Total = ',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      )),
+      DataCell(Text('')),
+      DataCell(Text('')),
+      DataCell(Text('')),
+      DataCell(Text(totalScore.toString())),
+    ]));
+    DataTable table = DataTable(
+      rows: tableRows,
+      columns: [
+        DataColumn(
+            label: Text(
+          'Name',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+        DataColumn(
+            label: Text(
+          'Score',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+        DataColumn(
+            label: Text(
+          'Marks',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+        DataColumn(
+            label: Text(
+          'Weight',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+        DataColumn(
+            label: Text(
+          'Total',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+      ],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Text("Let's take a look at how you're doing :)",
+              style: TextStyle(fontStyle: FontStyle.italic)),
+          SingleChildScrollView(scrollDirection: Axis.horizontal, child: table)
+        ],
+      ),
+    );
+  }
+
+  @override
   Widget buildEventDetails(BuildContext context, {Function callback}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ListTile(
-            title: Text(
-                "${code.substring(0, 2)} ${code.substring(2)} | ${name}",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: theme.textHeadingColor)),
-          ),
+          // ListTile(
+          //   title: Text(
+          //       "${code.substring(0, 2)} ${code.substring(2)} | ${name}",
+          //       style: TextStyle(
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.bold,
+          //           color: theme.textHeadingColor)),
+          // ),
           ListTile(
               title: Text('Slot type  : ${getCourseType()}',
                   style: TextStyle(color: theme.textHeadingColor))),
