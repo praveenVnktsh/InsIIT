@@ -23,10 +23,29 @@ class Course extends Event {
   String cap;
   String prerequisite;
 
+  double totalWeight = 0.0;
+
   int slotType; // 0 = lecture, 1 = tutorial, 2 = lab
 
   List<Score> scores = [
-    Score(name: "Endsem", weightage: 0, total: 1, score: 1.0)
+    Score(
+        name: "Endsem",
+        weightage: 25,
+        total: 100,
+        score: 10.0,
+        satScore: ScoreColors.good),
+    Score(
+        name: "Midsem",
+        weightage: 50,
+        total: 100,
+        score: 10.0,
+        satScore: ScoreColors.okay),
+    Score(
+        name: "Endsem",
+        weightage: 25,
+        total: 100,
+        score: 100.0,
+        satScore: ScoreColors.bad),
   ];
 
   Course({
@@ -253,17 +272,17 @@ class Course extends Event {
     );
   }
 
+  bool sorted = false;
   @override
   Widget buildScores(BuildContext context, {Function callback}) {
     List<DataRow> tableRows = [];
     double totalScore = 0.0;
-    // List<FlSpot> markspots = [];
-    double tempIndex = 1;
+
+    totalWeight = 0;
     scores.forEach((Score mark) {
       tableRows.add(mark.getRow());
       totalScore += mark.netScore;
-      // markspots.add(FlSpot(tempIndex, mark.score * 100 / mark.total));
-      tempIndex += 1;
+      totalWeight += mark.weightage;
     });
     this.totalScore = totalScore;
     tableRows.add(DataRow(cells: [
@@ -274,9 +293,13 @@ class Course extends Event {
       DataCell(Text('')),
       DataCell(Text('')),
       DataCell(Text('')),
-      DataCell(Text(totalScore.toString())),
+      DataCell(Text('${totalScore.toString()}/${totalWeight.toString()}')),
     ]));
+    sorted = !sorted;
     DataTable table = DataTable(
+      columnSpacing: 25.0,
+      sortColumnIndex: 3,
+      sortAscending: false,
       rows: tableRows,
       columns: [
         DataColumn(
@@ -285,38 +308,53 @@ class Course extends Event {
           style: TextStyle(fontWeight: FontWeight.bold),
         )),
         DataColumn(
+            numeric: true,
             label: Text(
-          'Score',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
+              'Score',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
         DataColumn(
+            numeric: true,
             label: Text(
-          'Marks',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
+              'Marks',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
         DataColumn(
+            numeric: true,
+            onSort: (index, ascending) {
+              scores.sort((a, b) => a.weightage.compareTo(b.weightage));
+              if (sorted) {
+                scores = scores.reversed.toList();
+              }
+              callback();
+            },
             label: Text(
-          'Weight',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
+              'Weight %',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
         DataColumn(
+            numeric: true,
             label: Text(
-          'Total',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
+              'Total',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
       ],
     );
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Text("Let's take a look at how you're doing :)",
-              style: TextStyle(fontStyle: FontStyle.italic)),
-          SingleChildScrollView(scrollDirection: Axis.horizontal, child: table)
-        ],
+    return Container(
+      width: ScreenSize.size.width,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Text("Let's take a look at how you're doing :)",
+                style: TextStyle(fontStyle: FontStyle.italic)),
+            SingleChildScrollView(
+                scrollDirection: Axis.horizontal, child: table)
+          ],
+        ),
       ),
     );
   }

@@ -57,7 +57,9 @@ class _EventDetailState extends State<EventDetail> {
                 fontWeight: FontWeight.bold, color: theme.textHeadingColor)),
       ),
       body: SingleChildScrollView(
-        child: event.buildScores(context, callback: () {}),
+        child: event.buildScores(context, callback: () {
+          setState(() {});
+        }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
