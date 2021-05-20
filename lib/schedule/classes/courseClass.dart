@@ -280,7 +280,7 @@ class Course extends Event {
 
     totalWeight = 0;
     scores.forEach((Score mark) {
-      tableRows.add(mark.getRow());
+      tableRows.add(mark.getRow(context, callback));
       totalScore += mark.netScore;
       totalWeight += mark.weightage;
     });
@@ -297,6 +297,7 @@ class Course extends Event {
     ]));
     sorted = !sorted;
     DataTable table = DataTable(
+      showCheckboxColumn: false,
       columnSpacing: 25.0,
       sortColumnIndex: 3,
       sortAscending: false,
@@ -341,19 +342,21 @@ class Course extends Event {
       ],
     );
 
-    return Container(
-      width: ScreenSize.size.width,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Text("Let's take a look at how you're doing :)",
-                style: TextStyle(fontStyle: FontStyle.italic)),
-            SingleChildScrollView(
-                scrollDirection: Axis.horizontal, child: table)
-          ],
+    return Center(
+      child: Container(
+        width: ScreenSize.size.width,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Text("Let's take a look at how you're doing :)",
+                  style: TextStyle(fontStyle: FontStyle.italic)),
+              SingleChildScrollView(
+                  scrollDirection: Axis.horizontal, child: table)
+            ],
+          ),
         ),
       ),
     );

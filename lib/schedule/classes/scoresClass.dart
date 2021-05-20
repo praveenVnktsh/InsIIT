@@ -15,6 +15,7 @@ class Score {
   double score = 0.0;
   double netScore = 0.0;
   Color satScore = ScoreColors.good;
+
   Score(
       {this.name,
       this.weightage,
@@ -23,7 +24,7 @@ class Score {
       this.satScore,
       this.netScore});
 
-  DataRow getRow() {
+  DataRow getRow(context, Function callback) {
     this.netScore = score * weightage / (total);
     InputDecoration dec = InputDecoration(
         border: InputBorder.none,
@@ -33,7 +34,92 @@ class Score {
         disabledBorder: InputBorder.none,
         hintText: "Hint here");
     return DataRow(
-        // onSelectChanged: (val) {},
+        onSelectChanged: (val) {
+          String newname = this.name;
+          double newscore = this.score;
+          double newweight = this.weightage;
+          double newtotal = this.total;
+          showDialog(
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Edit Exam"),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 10),
+                        TextFormField(
+                          initialValue: this.name,
+                          decoration: InputDecoration(
+                            labelText: 'Exam Name',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (val) {
+                            newname = val;
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        TextFormField(
+                          initialValue: this.score.toString(),
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Your Score',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (val) {
+                            newscore = double.parse(val);
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        TextFormField(
+                          initialValue: this.total.toString(),
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Exam Total',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (val) {
+                            newtotal = double.parse(val);
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        TextFormField(
+                          initialValue: this.weightage.toString(),
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Exam Weightage (%)',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (val) {
+                            newweight = double.parse(val);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Cancel")),
+                    TextButton(
+                        onPressed: () {
+                          this.score = newscore;
+
+                          this.name = newname;
+                          this.total = newtotal;
+                          this.weightage = newweight;
+                          this.netScore = score * weightage / (total);
+                          callback();
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Apply")),
+                  ],
+                );
+              },
+              context: context);
+        },
         color: MaterialStateProperty.all(this.satScore),
         cells: [
           // DataCell(
