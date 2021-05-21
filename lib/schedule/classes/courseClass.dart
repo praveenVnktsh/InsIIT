@@ -285,16 +285,161 @@ class Course extends Event {
       totalWeight += mark.weightage;
     });
     this.totalScore = totalScore;
-    tableRows.add(DataRow(cells: [
-      DataCell(Text(
-        'Total = ',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      )),
-      DataCell(Text('')),
-      DataCell(Text('')),
-      DataCell(Text('')),
-      DataCell(Text('${totalScore.toString()}/${totalWeight.toString()}')),
-    ]));
+    tableRows.add(DataRow(
+        onSelectChanged: (val) {
+          String newname = 'Quiz';
+          double newscore = 0.0;
+          double newweight = 0.0;
+          double newtotal = 1.0;
+          String newsatscore = 'Great!';
+          showDialog(
+              builder: (BuildContext context) {
+                return StatefulBuilder(builder: (context, setState) {
+                  return AlertDialog(
+                    title: Text("New Exam"),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: newname,
+                            decoration: InputDecoration(
+                              labelText: 'Exam Name',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newname = val;
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: newscore.toString(),
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Your Score',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newscore = double.parse(val);
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: newtotal.toString(),
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Exam Total',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newtotal = double.parse(val);
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: newweight.toString(),
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Exam Weightage (%)',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newweight = double.parse(val);
+                            },
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Performance : "),
+                              DropdownButton<String>(
+                                focusColor: Colors.white,
+                                value: newsatscore,
+                                style: TextStyle(color: Colors.white),
+                                iconEnabledColor: Colors.black,
+                                items: <String>[
+                                  'Great!',
+                                  'Okay',
+                                  'Bad :/',
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String value) {
+                                  newsatscore = value;
+                                  setState(() {});
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Cancel")),
+                      TextButton(
+                          onPressed: () {
+                            Color satColor;
+                            if (newsatscore.compareTo('Great!') == 0) {
+                              satColor = ScoreColors.good;
+                            } else if (newsatscore.compareTo('Okay') == 0) {
+                              satColor = ScoreColors.okay;
+                            } else if (newsatscore.compareTo('Bad :/') == 0) {
+                              satColor = ScoreColors.bad;
+                            }
+                            this.scores.add(Score(
+                                name: newname,
+                                total: newtotal,
+                                score: newscore,
+                                satScore: satColor,
+                                weightage: newweight,
+                                netScore: newscore * newweight / (newtotal)));
+                            callback();
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Apply")),
+                    ],
+                  );
+                });
+              },
+              context: context);
+        },
+        cells: [
+          DataCell(Container(
+            padding: const EdgeInsets.all(5.0),
+            decoration: BoxDecoration(
+              border: Border.all(width: 1.0),
+              borderRadius: BorderRadius.all(Radius.circular(
+                      25.0) //                 <--- border radius here
+                  ),
+            ),
+            child: Text(
+              'Add exam',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          )),
+          DataCell(Text('')),
+          DataCell(Text('')),
+          DataCell(Text(
+            'Total = ',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          )),
+          DataCell(Text(
+              '${totalScore.toStringAsFixed(2)}/${totalWeight.toStringAsFixed(2)}')),
+        ]));
     sorted = !sorted;
     DataTable table = DataTable(
       showCheckboxColumn: false,
@@ -351,8 +496,10 @@ class Course extends Event {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Text("Let's take a look at how you're doing :)",
-                  style: TextStyle(fontStyle: FontStyle.italic)),
+              Text("Your Performance so far",
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold)),
               SingleChildScrollView(
                   scrollDirection: Axis.horizontal, child: table)
             ],
@@ -369,14 +516,6 @@ class Course extends Event {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // ListTile(
-          //   title: Text(
-          //       "${code.substring(0, 2)} ${code.substring(2)} | ${name}",
-          //       style: TextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.bold,
-          //           color: theme.textHeadingColor)),
-          // ),
           ListTile(
               title: Text('Slot type  : ${getCourseType()}',
                   style: TextStyle(color: theme.textHeadingColor))),
@@ -440,7 +579,6 @@ class Course extends Event {
               : ListTile(
                   title: Text('Minor        : $minor',
                       style: TextStyle(color: theme.textHeadingColor))),
-
           ListTile(
             title: Text('Instructors',
                 style: TextStyle(
@@ -467,19 +605,6 @@ class Course extends Event {
                     }).toList(),
             ),
           ),
-
-          // (prerequisite == '-')
-          //     ? Container()
-          //     : Text('Pre-requisite: $prerequisite',
-          //         style: TextStyle(
-          //             fontWeight: FontWeight.bold,
-          //             fontSize: 16,
-          //             color: theme.textHeadingColor)),
-          // ExpansionTile(
-          //   key: GlobalKey(),
-          //   title: Text('View Attendance'),
-          //   children: attendance,
-          // )
         ],
       ),
     );

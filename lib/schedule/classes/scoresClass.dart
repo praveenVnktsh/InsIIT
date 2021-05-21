@@ -39,148 +39,147 @@ class Score {
           double newscore = this.score;
           double newweight = this.weightage;
           double newtotal = this.total;
+          String newsatscore = 'Great!';
+          if (this.satScore == ScoreColors.good) {
+            newsatscore = 'Great!';
+          } else if (this.satScore == ScoreColors.okay) {
+            newsatscore = 'Okay';
+          } else if (this.satScore == ScoreColors.bad) {
+            newsatscore = 'Bad :/';
+          }
           showDialog(
               builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Edit Exam"),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(height: 10),
-                        TextFormField(
-                          initialValue: this.name,
-                          decoration: InputDecoration(
-                            labelText: 'Exam Name',
-                            border: OutlineInputBorder(),
+                return StatefulBuilder(builder: (context, setState) {
+                  return AlertDialog(
+                    title: Text("Edit Exam"),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: this.name,
+                            decoration: InputDecoration(
+                              labelText: 'Exam Name',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newname = val;
+                            },
                           ),
-                          onChanged: (val) {
-                            newname = val;
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          initialValue: this.score.toString(),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Your Score',
-                            border: OutlineInputBorder(),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: this.score.toString(),
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Your Score',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newscore = double.parse(val);
+                            },
                           ),
-                          onChanged: (val) {
-                            newscore = double.parse(val);
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          initialValue: this.total.toString(),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Exam Total',
-                            border: OutlineInputBorder(),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: this.total.toString(),
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Exam Total',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newtotal = double.parse(val);
+                            },
                           ),
-                          onChanged: (val) {
-                            newtotal = double.parse(val);
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          initialValue: this.weightage.toString(),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Exam Weightage (%)',
-                            border: OutlineInputBorder(),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            initialValue: this.weightage.toString(),
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Exam Weightage (%)',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (val) {
+                              newweight = double.parse(val);
+                            },
                           ),
-                          onChanged: (val) {
-                            newweight = double.parse(val);
-                          },
-                        ),
-                      ],
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Performance : "),
+                              DropdownButton<String>(
+                                focusColor: Colors.white,
+                                value: newsatscore,
+                                style: TextStyle(color: Colors.white),
+                                iconEnabledColor: Colors.black,
+                                items: <String>[
+                                  'Great!',
+                                  'Okay',
+                                  'Bad :/',
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String value) {
+                                  newsatscore = value;
+                                  setState(() {});
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Cancel")),
-                    TextButton(
-                        onPressed: () {
-                          this.score = newscore;
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Cancel")),
+                      TextButton(
+                          onPressed: () {
+                            this.score = newscore;
 
-                          this.name = newname;
-                          this.total = newtotal;
-                          this.weightage = newweight;
-                          this.netScore = score * weightage / (total);
-                          callback();
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Apply")),
-                  ],
-                );
+                            this.name = newname;
+                            this.total = newtotal;
+                            this.weightage = newweight;
+                            this.netScore = score * weightage / (total);
+                            if (newsatscore.compareTo('Great!') == 0) {
+                              this.satScore = ScoreColors.good;
+                            } else if (newsatscore.compareTo('Okay') == 0) {
+                              this.satScore = ScoreColors.okay;
+                            } else if (newsatscore.compareTo('Bad :/') == 0) {
+                              this.satScore = ScoreColors.bad;
+                            }
+                            callback();
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Apply")),
+                    ],
+                  );
+                });
               },
               context: context);
         },
         color: MaterialStateProperty.all(this.satScore),
         cells: [
-          // DataCell(
-          //   TextFormField(
-          //     initialValue: name,
-          //     style: TextStyle(fontSize: 14),
-          //     decoration: dec,
-          //     onFieldSubmitted: (val) {
-          //       name = val;
-          //     },
-          //   ),
-          // ),
-          // DataCell(
-          //   TextFormField(
-          //     initialValue: score.toString(),
-          //     style: TextStyle(fontSize: 14),
-          //     decoration: dec,
-          //     onFieldSubmitted: (val) {
-          //       score = double.parse(val);
-          //     },
-          //   ),
-          // ),
-          // DataCell(
-          //   TextFormField(
-          //     initialValue: total.toString(),
-          //     style: TextStyle(fontSize: 14),
-          //     decoration: dec,
-          //     onFieldSubmitted: (val) {
-          //       total = double.parse(val);
-          //     },
-          //   ),
-          // ),
-          // DataCell(
-          //   TextFormField(
-          //     initialValue: weightage.toString(),
-          //     style: TextStyle(fontSize: 14),
-          //     decoration: dec,
-          //     onFieldSubmitted: (val) {
-          //       weightage = double.parse(val);
-          //     },
-          //   ),
-          // ),
-          // DataCell(
-          //   TextFormField(
-          //     initialValue: netScore.toString(),
-          //     style: TextStyle(fontSize: 14),
-          //     decoration: dec,
-          //     onFieldSubmitted: (val) {
-          //       netScore = double.parse(val);
-          //     },
-          //   ),
-          // ),
-          DataCell(Text(name,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontStyle: FontStyle.italic,
-              ))),
-          DataCell(Text(score.toString())),
-          DataCell(Text(total.toString())),
-          DataCell(Text(weightage.toString())),
-          DataCell(Text(netScore.toString())),
+          DataCell(
+              Text(name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.italic,
+                  )),
+              showEditIcon: true),
+          DataCell(Text(score.toStringAsFixed(2))),
+          DataCell(Text(total.toStringAsFixed(2))),
+          DataCell(Text(weightage.toStringAsFixed(2))),
+          DataCell(Text(netScore.toStringAsFixed(2))),
         ]);
   }
 
