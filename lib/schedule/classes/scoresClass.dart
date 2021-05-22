@@ -145,7 +145,6 @@ class Score {
                       TextButton(
                           onPressed: () {
                             this.score = newscore;
-
                             this.name = newname;
                             this.total = newtotal;
                             this.weightage = newweight;

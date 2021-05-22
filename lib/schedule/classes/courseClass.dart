@@ -511,101 +511,114 @@ class Course extends Event {
 
   @override
   Widget buildEventDetails(BuildContext context, {Function callback}) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ListTile(
-              title: Text('Slot type  : ${getCourseType()}',
-                  style: TextStyle(color: theme.textHeadingColor))),
-          ListTile(
-            title: Text(
-                "Start         : ${formatDate(startTime, [HH, ':', nn])}",
-                style: TextStyle(color: theme.textHeadingColor)),
-            trailing: Icon(Icons.edit, color: theme.iconColor),
-            onTap: () {
-              pickDate(context, startTime).then((time) {
-                if (time != null) {
-                  startTime = DateTime(startTime.year, startTime.month,
-                      startTime.day, time.hour, time.minute);
-                  callback();
-                }
-              });
-            },
-          ),
-          ListTile(
-            title: Text(
-                "End           : ${formatDate(endTime, [HH, ':', nn])} ",
-                style: TextStyle(color: theme.textHeadingColor)),
-            trailing: Icon(Icons.edit, color: theme.iconColor),
-            onTap: () {
-              pickDate(context, endTime).then((time) {
-                if (time != null) {
-                  endTime = DateTime(endTime.year, endTime.month, endTime.day,
-                      time.hour, time.minute);
-                  callback();
-                }
-              });
-            },
-          ),
-          ListTile(
-              title: Text(
-                  'L-T-P-C      : ${ltpc[0]} - ${ltpc[1]} - ${ltpc[2]} - ${ltpc[3]}',
-                  style: TextStyle(color: theme.textHeadingColor))),
-          (link != null && link.length != 0)
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: link.split(',').map((link) {
-                    return GestureDetector(
-                      onTap: () async {
-                        if (await canLaunch(link)) {
-                          await launch(link, forceSafariVC: false);
-                        } else {
-                          throw 'Could not launch $link';
-                        }
-                      },
-                      child: Text(
-                        (link == '-') ? "" : link,
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    );
-                  }).toList(),
-                )
-              : Container(),
-          (minor == null)
-              ? Container()
-              : ListTile(
-                  title: Text('Minor        : $minor',
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: theme.appBarColor,
+        title: Text('Course Details - ${this.name}',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: theme.textHeadingColor)),
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: theme.iconColor),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              ListTile(
+                  title: Text('Slot type  : ${getCourseType()}',
                       style: TextStyle(color: theme.textHeadingColor))),
-          ListTile(
-            title: Text('Instructors',
-                style: TextStyle(
-                    color: theme.textHeadingColor,
-                    fontWeight: FontWeight.bold)),
-            subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: (instructors == null)
-                  ? [Container()]
-                  : instructors.split(',').map<Widget>((String instructor) {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          8,
-                          0,
-                          0,
-                          0,
-                        ),
-                        child: Text(instructor,
-                            style: TextStyle(
-                                // fontWeight: FontWeight.bold,
-                                color: theme.textSubheadingColor)),
-                      );
-                    }).toList(),
-            ),
+              ListTile(
+                title: Text(
+                    "Start         : ${formatDate(startTime, [HH, ':', nn])}",
+                    style: TextStyle(color: theme.textHeadingColor)),
+                trailing: Icon(Icons.edit, color: theme.iconColor),
+                onTap: () {
+                  pickDate(context, startTime).then((time) {
+                    if (time != null) {
+                      startTime = DateTime(startTime.year, startTime.month,
+                          startTime.day, time.hour, time.minute);
+                      callback();
+                    }
+                  });
+                },
+              ),
+              ListTile(
+                title: Text(
+                    "End           : ${formatDate(endTime, [HH, ':', nn])} ",
+                    style: TextStyle(color: theme.textHeadingColor)),
+                trailing: Icon(Icons.edit, color: theme.iconColor),
+                onTap: () {
+                  pickDate(context, endTime).then((time) {
+                    if (time != null) {
+                      endTime = DateTime(endTime.year, endTime.month,
+                          endTime.day, time.hour, time.minute);
+                      callback();
+                    }
+                  });
+                },
+              ),
+              ListTile(
+                  title: Text(
+                      'L-T-P-C      : ${ltpc[0]} - ${ltpc[1]} - ${ltpc[2]} - ${ltpc[3]}',
+                      style: TextStyle(color: theme.textHeadingColor))),
+              (link != null && link.length != 0)
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: link.split(',').map((link) {
+                        return GestureDetector(
+                          onTap: () async {
+                            if (await canLaunch(link)) {
+                              await launch(link, forceSafariVC: false);
+                            } else {
+                              throw 'Could not launch $link';
+                            }
+                          },
+                          child: Text(
+                            (link == '-') ? "" : link,
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        );
+                      }).toList(),
+                    )
+                  : Container(),
+              (minor == null)
+                  ? Container()
+                  : ListTile(
+                      title: Text('Minor        : $minor',
+                          style: TextStyle(color: theme.textHeadingColor))),
+              ListTile(
+                title: Text('Instructors',
+                    style: TextStyle(
+                        color: theme.textHeadingColor,
+                        fontWeight: FontWeight.bold)),
+                subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: (instructors == null)
+                      ? [Container()]
+                      : instructors.split(',').map<Widget>((String instructor) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              8,
+                              0,
+                              0,
+                              0,
+                            ),
+                            child: Text(instructor,
+                                style: TextStyle(
+                                    // fontWeight: FontWeight.bold,
+                                    color: theme.textSubheadingColor)),
+                          );
+                        }).toList(),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
