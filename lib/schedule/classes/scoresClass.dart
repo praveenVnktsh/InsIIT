@@ -14,6 +14,7 @@ class Score {
   double total = 1.0;
   double score = 0.0;
   double netScore = 0.0;
+  DateTime date = DateTime.now();
   Color satScore = ScoreColors.good;
 
   Score(

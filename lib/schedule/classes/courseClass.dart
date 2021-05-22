@@ -5,6 +5,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 
 import 'package:instiapp/data/scheduleContainer.dart';
+import 'package:instiapp/schedule/classes/courseGraphing.dart';
 import 'package:instiapp/themeing/notifier.dart';
 import 'package:instiapp/utilities/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -419,9 +420,7 @@ class Course extends Event {
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
               border: Border.all(width: 1.0),
-              borderRadius: BorderRadius.all(Radius.circular(
-                      25.0) //                 <--- border radius here
-                  ),
+              borderRadius: BorderRadius.all(Radius.circular(25.0)),
             ),
             child: Text(
               'Add exam',
@@ -437,10 +436,19 @@ class Course extends Event {
             'Total = ',
             style: TextStyle(fontWeight: FontWeight.bold),
           )),
-          DataCell(Text(
-              '${totalScore.toStringAsFixed(2)}/${totalWeight.toStringAsFixed(2)}')),
+          DataCell(Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(totalScore.toStringAsFixed(2), textAlign: TextAlign.center),
+              Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: Container(width: 40, height: 1, color: Colors.black),
+              ),
+              Text(totalWeight.toStringAsFixed(2), textAlign: TextAlign.center),
+            ],
+          )),
         ]));
-    sorted = !sorted;
     DataTable table = DataTable(
       showCheckboxColumn: false,
       columnSpacing: 25.0,
@@ -467,13 +475,6 @@ class Course extends Event {
             )),
         DataColumn(
             numeric: true,
-            onSort: (index, ascending) {
-              scores.sort((a, b) => a.weightage.compareTo(b.weightage));
-              if (sorted) {
-                scores = scores.reversed.toList();
-              }
-              callback();
-            },
             label: Text(
               'Weight %',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -487,22 +488,31 @@ class Course extends Event {
       ],
     );
 
-    return Center(
-      child: Container(
-        width: ScreenSize.size.width,
+    return SingleChildScrollView(
+      child: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Text("Your Performance so far",
-                  style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.bold)),
-              SingleChildScrollView(
-                  scrollDirection: Axis.horizontal, child: table)
-            ],
+          child: Container(
+            width: ScreenSize.size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                SizedBox(height: 10),
+                Text("Your Performance so far",
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(height: 10),
+                SingleChildScrollView(
+                    scrollDirection: Axis.horizontal, child: table),
+                SizedBox(height: 30),
+                Container(
+                    width: ScreenSize.size.width * 0.9,
+                    // height: ScreenSize.size.height * 0.4,
+                    child: CourseGraph(this))
+              ],
+            ),
           ),
         ),
       ),

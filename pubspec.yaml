@@ -23,6 +23,7 @@ dependencies:
   flutter_autolink_text: ^1.0.0+1
   date_format: ^1.0.9
   url_launcher: ^5.4.7
+  fl_chart: ^0.36.1
   image_picker: ^0.6.4
   flutter_local_notifications: ^1.4.0
   animator: ^1.0.0+5
