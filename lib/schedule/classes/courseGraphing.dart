@@ -23,14 +23,7 @@ class CourseGraphState extends State<CourseGraph> {
       child: Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(18)),
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff2c274c),
-              Color(0xff46426c),
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
+          color: Colors.black87,
         ),
         child: Stack(
           children: <Widget>[
@@ -96,9 +89,6 @@ class CourseGraphState extends State<CourseGraph> {
             fontSize: 16,
           ),
           margin: 10,
-          // getTitles: (value) {
-          //   return '${widget.course.scores[value.toInt()].name.substring(0, 3)}...';
-          // },
         ),
         leftTitles: SideTitles(
           showTitles: true,
@@ -107,15 +97,6 @@ class CourseGraphState extends State<CourseGraph> {
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
-          // getTitles: (value) {
-          //   print(value.toString());
-          //   if (value.toInt() < widget.course.scores.length) {
-          //     var score = widget.course.scores[value.toInt()];
-          //     return (score.score * 100 / score.total).toStringAsFixed(0);
-          //   } else {
-          //     return '100';
-          //   }
-          // },
           margin: 8,
           reservedSize: 30,
           interval: 25,
@@ -157,17 +138,14 @@ class CourseGraphState extends State<CourseGraph> {
     var lineChartBarData1 = LineChartBarData(
       spots: spots,
       isCurved: false,
-      colors: [
-        const Color(0xff4af699),
-      ],
+      colors: [Colors.white],
       barWidth: 8,
       isStrokeCapRound: true,
       dotData: FlDotData(
-        show: true,
-      ),
-      belowBarData: BarAreaData(
         show: false,
       ),
+      belowBarData:
+          BarAreaData(show: true, colors: [Colors.white.withAlpha(50)]),
     );
     return [
       lineChartBarData1,
